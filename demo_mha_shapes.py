@@ -98,9 +98,9 @@ if __name__ == "__main__":
 
 
     weights = torch.softmax(scores, dim=-1)     
-    # Same grid shape, but each row now adds up to 100%
+    # Same grid shape, but each row now adds up to 100%                             # Step 6: turn scores into percentages
     # Head 1:   The  cat  sat  it  tired
-    # it       [ 2%  80%  5%  6%   7% ]    ← "it" mostly looks at "cat"             # Step 6: turn scores into percentages
+    # it       [ 2%  80%  5%  6%   7% ]    ← "it" would mostly looks at "cat" after training. 
     log(f"softmax(weights):  {tuple(weights.shape)} = (B,heads,T,T)")
 
     ctx = torch.matmul(weights, v)                                                  # Step 7: gather information
@@ -110,7 +110,7 @@ if __name__ == "__main__":
     # The   [1111]     The   [2222]     The   [3333]
     # cat   [1111]     cat   [2222]     cat   [3333]
     # ...              ...              ...
-    # it    [1111]  ← now contains "cat" info
+    # it    [1111]  ← would now contain "cat" info after training.
     log(f"context @v:        {tuple(ctx.shape)} = (B,heads,T,d_head)")
 
     out = ctx.transpose(1, 2).contiguous().view(B, T, d_model)              # Step 8: put the heads back side by side
@@ -128,7 +128,7 @@ if __name__ == "__main__":
     # The    [■■■■■■■■■■■■]
     # cat    [■■■■■■■■■■■■]
     # sat    [■■■■■■■■■■■■]
-    # it     [■■■■■■■■■■■■]   ← now "knows" it means the cat
+    # it     [■■■■■■■■■■■■]   ← after training, "it" would mostly look at "cat"
     # tired  [■■■■■■■■■■■■]
     log(f"final proj:        {tuple(out.shape)} = (B,T,d_model)")
 
